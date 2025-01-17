@@ -1,6 +1,17 @@
 {
+  "name": "@joyautomation/dark-matter",
+  "version": "0.0.0",
+  "description": "Dark matter is the substrate within which the entire universe expands.",
+  "author": "Joy Automation",
+  "license": "GPL-3.0",
+  "repository": "github:joyautomation/dark-matter",
+  "homepage": "https://github.com/joyautomation/dark-matter#readme",
+  "bugs": "https://github.com/joyautomation/dark-matter/issues",
+  "declaration": true,
+  "exports": "./index.ts",
   "tasks": {
-    "dev": "deno run --watch main.ts"
+    "test": "deno test --allow-env",
+    "test:watch": "deno test --allow-env --watch"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1"
