@@ -1,4 +1,32 @@
 /**
+ * @module dark-matter
+ * 
+ * Dark matter is a TypeScript library for handling success and failure cases in a type-safe way.
+ * It provides a Result type system and utilities for working with Results, including type guards,
+ * creation functions, and composition utilities.
+ * 
+ * @example
+ * ```ts
+ * import { createSuccess, createFail, isSuccess, resultPipe } from "@joyautomation/dark-matter";
+ * 
+ * // Create Results
+ * const success = createSuccess(42);
+ * const failure = createFail("Something went wrong");
+ * 
+ * // Use type guards
+ * if (isSuccess(success)) {
+ *   console.log(success.output); // 42
+ * }
+ * 
+ * // Compose functions
+ * const result = await resultPipe(
+ *   () => createSuccess(1),
+ *   (n) => createSuccess(n + 1)
+ * );
+ * ```
+ */
+
+/**
  * Type guard that checks if a Result is a failure.
  *
  * @template T - The type of the successful result value
@@ -110,3 +138,5 @@ export { resultPipe } from "./result/pipe.ts";
  * ```
  */
 export { allSuccess } from "./result/aggregate.ts";
+
+export { type Result, type ResultSuccess, type ResultFail } from "./result/result.ts";
