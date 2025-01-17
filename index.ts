@@ -139,4 +139,51 @@ export { resultPipe } from "./result/pipe.ts";
  */
 export { allSuccess } from "./result/aggregate.ts";
 
-export { type Result, type ResultSuccess, type ResultFail } from "./result/result.ts";
+/**
+ * A Result type that can either be successful with a value of type T,
+ * or a failure with an error message. This is the main type used throughout
+ * the library for handling operations that can fail.
+ * 
+ * @template T - The type of the successful value
+ * 
+ * @example
+ * ```ts
+ * function divide(a: number, b: number): Result<number> {
+ *   if (b === 0) {
+ *     return createFail("Division by zero");
+ *   }
+ *   return createSuccess(a / b);
+ * }
+ * ```
+ */
+export type { Result } from "./result/result.ts";
+
+/**
+ * Represents a successful result containing a value of type T.
+ * This type is used when an operation succeeds and returns a value.
+ * 
+ * @template T - The type of the successful value
+ * 
+ * @example
+ * ```ts
+ * const success: ResultSuccess<number> = {
+ *   success: true,
+ *   output: 42
+ * };
+ * ```
+ */
+export type { ResultSuccess } from "./result/result.ts";
+
+/**
+ * Represents a failed result containing an error message.
+ * This type is used when an operation fails and returns an error.
+ * 
+ * @example
+ * ```ts
+ * const failure: ResultFail = {
+ *   success: false,
+ *   error: "Something went wrong"
+ * };
+ * ```
+ */
+export type { ResultFail } from "./result/result.ts";

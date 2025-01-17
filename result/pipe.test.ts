@@ -1,6 +1,5 @@
 import { assertEquals } from "https://deno.land/std@0.208.0/assert/mod.ts";
-import { assertRejects } from "https://deno.land/std@0.208.0/assert/mod.ts";
-import { createSuccess, createFail, Result } from "./result.ts";
+import { createSuccess, createFail } from "./result.ts";
 import { resultPipe } from "./pipe.ts";
 
 Deno.test("resultPipe - single successful function", async () => {
