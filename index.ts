@@ -241,21 +241,58 @@ export { rcond } from "./fp/rcond.ts";
 export { pipe } from "./fp/pipe.ts";
 
 /**
- * Pipes a series of Result-returning functions together, where each function
- * receives the output of the previous function. Supports both synchronous and
- * asynchronous functions. If any function returns a failure, the pipe stops
- * and returns that failure.
+ * Pipes a series of synchronous Result-returning functions together, where each function
+ * receives the output of the previous function. If any function returns a failure,
+ * the pipe stops and returns that failure.
  *
- * @template T - Tuple of function types that return Result or Promise<Result>
- * @param fns - Functions to pipe together
- * @returns Promise of the final Result
+ * @template A - Type of the first function's success value
+ * @returns The final Result
  * @example
  * ```ts
- * const result = await resultPipe(
+ * const result = rpipe(
  *   () => createSuccess(1),
- *   (n) => createSuccess(n + 1),
- *   (n) => createSuccess(n * 2)
- * ); // Success(4)
+ *   (n) => createSuccess(n + 1)
+ * ); // Success(2)
  * ```
  */
 export { rpipe } from "./fp/rpipe.ts";
+
+/**
+ * Pipes a series of Result-returning functions together, where each function
+ * receives the output of the previous function. Supports both synchronous and
+ * asynchronous functions. If any function returns a failure or throws an error,
+ * the pipe stops and returns that failure.
+ *
+ * @template A - Type of the first function's success value
+ * @returns Promise of the final Result
+ * @example
+ * ```ts
+ * const result = await rpipeAsync(
+ *   () => createSuccess(1),
+ *   async (n) => createSuccess(n + 1)
+ * ); // Success(2)
+ * ```
+ */
+export { rpipeAsync } from "./fp/rpipe.ts";
+
+/**
+ * Performs left-to-right function composition with support for both synchronous and asynchronous functions.
+ * Takes an initial value and applies a series of functions to it in sequence, awaiting any Promise results.
+ *
+ * @template T - The type of the initial value
+ * @template A,B,C,D,E,F,G,H,I - The return types of each function in the pipeline
+ * @param initial - The starting value to pipe through the functions
+ * @param fns - A series of async or sync functions to apply in sequence
+ * @returns Promise of the result of applying all functions in sequence to the initial value
+ * @example
+ * ```ts
+ * // Mix of sync and async functions
+ * await pipeAsync(
+ *   3,
+ *   x => x + 1,                    // sync
+ *   async x => x * 2,              // async
+ *   x => x * x                     // sync
+ * )
+ * ```
+ */
+export { pipeAsync } from "./fp/pipe.ts";

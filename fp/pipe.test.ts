@@ -1,43 +1,117 @@
-import { describe, test } from "@std/testing/bdd";
-import { expect } from "@std/expect";
-import { pipe } from "./pipe.ts";
+import { assertEquals } from "@std/assert";
+import { pipe, pipeAsync } from "./pipe.ts";
 
-describe("pipe", () => {
-  // Test case for a single function
-  test("should work with a single function", () => {
-    const addOne = (x: number) => x + 1;
-    const result = pipe(5, addOne);
-    expect(result).toBe(6);
-  });
+// Synchronous pipe tests
+Deno.test("pipe - single function", () => {
+  const result = pipe(1, (x: number) => x + 1);
+  assertEquals(result, 2);
+});
 
-  // Test case for multiple functions
-  test("should work with multiple functions", () => {
-    const addOne = (x: number) => x + 1;
-    const double = (x: number) => x * 2;
-    const square = (x: number) => x * x;
-    const result = pipe(3, addOne, double, square);
-    expect(result).toBe(64); // ((3 + 1) * 2)^2 = 64
-  });
+Deno.test("pipe - multiple functions", () => {
+  const result = pipe(
+    1,
+    (x: number) => x + 1,
+    (x: number) => x * 2
+  );
+  assertEquals(result, 4); // (1 + 1) * 2 = 4
+});
 
-  // Test case for functions with different input/output types
-  test("should work with functions of different types", () => {
-    const toString = (x: number) => x.toString();
-    const addExclamation = (s: string) => s + "!";
-    const result = pipe(42, toString, addExclamation);
-    expect(result).toBe("42!");
-  });
+Deno.test("pipe - functions of different types", () => {
+  const result = pipe(
+    1,
+    (x: number) => x.toString(),
+    (x: string) => x + "!"
+  );
+  assertEquals(result, "1!");
+});
 
-  // Test case for an empty array of functions
-  test("should return the initial value when no functions are provided", () => {
-    const result = pipe(10);
-    expect(result).toBe(10);
-  });
+Deno.test("pipe - empty function list", () => {
+  const result = pipe(1);
+  assertEquals(result, 1);
+});
 
-  // Test case for functions that return undefined
-  test("should handle functions that return undefined", () => {
-    const returnUndefined = () => undefined;
-    const addOne = (x: number | undefined) => (x === undefined ? 0 : x + 1);
-    const result = pipe(5, returnUndefined, addOne);
-    expect(result).toBe(0);
-  });
+Deno.test("pipe - functions returning undefined", () => {
+  const result = pipe(
+    1,
+    (x: number) => {
+      x + 1; // No return statement
+    }
+  );
+  assertEquals(result, undefined);
+});
+
+// Asynchronous pipeAsync tests
+Deno.test("pipeAsync - single async function", async () => {
+  const result = await pipeAsync(1, async (x: number) => x + 1);
+  assertEquals(result, 2);
+});
+
+Deno.test("pipeAsync - multiple async functions", async () => {
+  const result = await pipeAsync(
+    1,
+    async (x: number) => x + 1,
+    async (x: number) => x * 2
+  );
+  assertEquals(result, 4); // (1 + 1) * 2 = 4
+});
+
+Deno.test("pipeAsync - mix of sync and async functions", async () => {
+  const result = await pipeAsync(
+    1,
+    (x: number) => x + 1,
+    async (x: number) => x * 2
+  );
+  assertEquals(result, 4);
+});
+
+Deno.test("pipeAsync - async functions of different types", async () => {
+  const result = await pipeAsync(
+    1,
+    async (x: number) => x.toString(),
+    async (x: string) => x + "!"
+  );
+  assertEquals(result, "1!");
+});
+
+Deno.test("pipeAsync - empty function list", async () => {
+  const result = await pipeAsync(1);
+  assertEquals(result, 1);
+});
+
+Deno.test("pipeAsync - async functions returning undefined", async () => {
+  const result = await pipeAsync(
+    1,
+    async (x: number) => {
+      x + 1; // No return statement
+    }
+  );
+  assertEquals(result, undefined);
+});
+
+Deno.test("pipeAsync - initial Promise value", async () => {
+  const result = await pipeAsync(
+    Promise.resolve(1),
+    async (x: number) => x + 1,
+    (x: number) => x * 2
+  );
+  assertEquals(result, 4);
+});
+
+Deno.test("pipeAsync - error propagation", async () => {
+  try {
+    await pipeAsync(
+      1,
+      async (x: number) => {
+        throw new Error("Test error");
+      },
+      (x: number) => x * 2
+    );
+    throw new Error("Should not reach here");
+  } catch (error) {
+    if (error instanceof Error) {
+      assertEquals(error.message, "Test error");
+    } else {
+      throw new Error("Unexpected error type");
+    }
+  }
 });
