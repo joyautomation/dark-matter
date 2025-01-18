@@ -174,14 +174,26 @@ export function cond<T, A, B, C, D, E, F, G, H, I>(
     { condition: (input: T) => boolean; action: (input: T) => I }
   ]
 ): A | B | C | D | E | F | G | H | I;
-// Implementation
+
+/**
+ * @template T - The type of the input value
+ * @template U - The return type of the actions
+ */
+export function cond<T, U>(
+  args: T,
+  conditionals: Array<{
+    condition: (input: T) => boolean;
+    action: (input: T) => U;
+  }>
+): U;
+
 /**
  * Implementation of the cond function that handles all overloaded cases.
  * @template T - The type of the input value
  * @template A - The return type of the actions
  * @param {T} args - The value to test against conditions
  * @param {Array<{ condition: (input: T) => boolean; action: (input: T) => A }>} conditionals - Array of condition-action pairs
- * @returns {A} The result of the first matching action
+ * @returns {A} The result of the matching action
  * @throws {Error} When no condition matches
  */
 export function cond<T, A>(
