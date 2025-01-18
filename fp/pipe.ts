@@ -15,8 +15,8 @@
  * ```
  */
 
-import { Result } from "./result.ts";
-import { isFail, createFail } from "./result.ts";
+import type { Result } from "../result/result.ts";
+import { isFail, createFail } from "../result/result.ts";
 
 /**
  * Pipes a series of Result-returning functions together, where each function

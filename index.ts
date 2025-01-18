@@ -1,23 +1,23 @@
 /**
  * @module dark-matter
- * 
+ *
  * Dark matter is a TypeScript library for handling success and failure cases in a type-safe way.
  * It provides a Result type system and utilities for working with Results, including type guards,
  * creation functions, and composition utilities.
- * 
+ *
  * @example
  * ```ts
  * import { createSuccess, createFail, isSuccess, resultPipe } from "@joyautomation/dark-matter";
- * 
+ *
  * // Create Results
  * const success = createSuccess(42);
  * const failure = createFail("Something went wrong");
- * 
+ *
  * // Use type guards
  * if (isSuccess(success)) {
  *   console.log(success.output); // 42
  * }
- * 
+ *
  * // Compose functions
  * const result = await resultPipe(
  *   () => createSuccess(1),
@@ -119,7 +119,7 @@ export { unwrapResults } from "./result/result.ts";
  * ); // Success(4)
  * ```
  */
-export { resultPipe } from "./result/pipe.ts";
+export { resultPipe } from "./fp/pipe.ts";
 
 /**
  * Type guard that checks if all Results in an array are successful.
@@ -143,9 +143,9 @@ export { allSuccess } from "./result/aggregate.ts";
  * A Result type that can either be successful with a value of type T,
  * or a failure with an error message. This is the main type used throughout
  * the library for handling operations that can fail.
- * 
+ *
  * @template T - The type of the successful value
- * 
+ *
  * @example
  * ```ts
  * function divide(a: number, b: number): Result<number> {
@@ -161,9 +161,9 @@ export type { Result } from "./result/result.ts";
 /**
  * Represents a successful result containing a value of type T.
  * This type is used when an operation succeeds and returns a value.
- * 
+ *
  * @template T - The type of the successful value
- * 
+ *
  * @example
  * ```ts
  * const success: ResultSuccess<number> = {
@@ -177,7 +177,7 @@ export type { ResultSuccess } from "./result/result.ts";
 /**
  * Represents a failed result containing an error message.
  * This type is used when an operation fails and returns an error.
- * 
+ *
  * @example
  * ```ts
  * const failure: ResultFail = {
@@ -187,3 +187,34 @@ export type { ResultSuccess } from "./result/result.ts";
  * ```
  */
 export type { ResultFail } from "./result/result.ts";
+
+/**
+ * Evaluates a series of condition-action pairs and returns the result of the first matching condition's action.
+ * Returns a Result containing either the action's output or an error if no conditions match.
+ *
+ * @template T - The type of the input value to check against conditions
+ * @template U - The type of value returned by the action functions
+ *
+ * @example
+ * ```ts
+ * const ageGroup = cond(25, [
+ *   {
+ *     condition: (age: number) => age >= 65,
+ *     action: () => "Senior"
+ *   },
+ *   {
+ *     condition: (age: number) => age >= 18,
+ *     action: () => "Adult"
+ *   },
+ *   {
+ *     condition: (age: number) => age >= 13,
+ *     action: () => "Teen"
+ *   }
+ * ]);
+ *
+ * if (isSuccess(ageGroup)) {
+ *   console.log(ageGroup.output); // "Adult"
+ * }
+ * ```
+ */
+export { cond } from "./fp/cond.ts";

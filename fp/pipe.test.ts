@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { createSuccess, createFail } from "./result.ts";
+import { createSuccess, createFail } from "../result/result.ts";
 import { resultPipe } from "./pipe.ts";
 
 Deno.test("resultPipe - single successful function", async () => {
@@ -32,8 +32,8 @@ Deno.test("resultPipe - chain fails on first error", async () => {
 
 Deno.test("resultPipe - handles async functions", async () => {
   const result = await resultPipe(
-    async () => createSuccess(1),
-    async (n: number) => createSuccess(n + 1)
+    () => createSuccess(1),
+    (n: number) => createSuccess(n + 1)
   );
   assertEquals(result, createSuccess(2));
 });
@@ -41,7 +41,7 @@ Deno.test("resultPipe - handles async functions", async () => {
 Deno.test("resultPipe - mixed sync and async functions", async () => {
   const result = await resultPipe(
     () => createSuccess(1),
-    async (n: number) => createSuccess(n + 1),
+    (n: number) => createSuccess(n + 1),
     (n: number) => createSuccess(n * 2)
   );
   assertEquals(result, createSuccess(4));
@@ -84,7 +84,7 @@ Deno.test("resultPipe - handles rejected promises", async () => {
 });
 
 Deno.test("resultPipe - handles non-Error thrown values", async () => {
-  const result = await resultPipe(async () => {
+  const result = await resultPipe(() => {
     throw "string error"; // Throwing a string instead of Error
   });
   assertEquals(result, createFail("string error"));

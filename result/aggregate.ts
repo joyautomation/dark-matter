@@ -6,7 +6,7 @@
  * in a type-safe way.
  */
 
-import { Result, ResultSuccess, isSuccess } from "./result.ts";
+import { type Result, type ResultSuccess, isSuccess } from "./result.ts";
 
 /**
  * Checks if all Results in an array are successful.

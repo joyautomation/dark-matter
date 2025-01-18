@@ -1,8 +1,6 @@
 import { assertEquals } from "@std/assert";
 import {
-  Result,
-  ResultSuccess,
-  ResultFail,
+  type Result,
   isSuccess,
   isFail,
   createSuccess,
