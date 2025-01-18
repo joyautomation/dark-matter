@@ -119,7 +119,7 @@ export { unwrapResults } from "./result/result.ts";
  * ); // Success(4)
  * ```
  */
-export { resultPipe } from "./fp/pipe.ts";
+export { rpipe } from "./fp/rpipe.ts";
 
 /**
  * Type guard that checks if all Results in an array are successful.
@@ -218,3 +218,21 @@ export type { ResultFail } from "./result/result.ts";
  * ```
  */
 export { cond } from "./fp/cond.ts";
+
+/**
+ * Pipes a series of functions together, where each function receives the output of the previous function.
+ * Supports both synchronous and asynchronous functions. If any function returns a failure, the pipe stops
+ * and returns that failure.
+ *
+ * @template T - The type of the input value to pipe through the functions
+ * @template A - The type of the output value returned by the last function
+ * @template B - The type of the output value returned by the second-to-last function
+ * @template C - The type of the output value returned by the third-to-last function
+ *
+ * @example
+ * ```ts
+ * const result = pipe(3, addOne, double, square);
+ * console.log(result); // 64
+ * ```
+ */
+export { pipe } from "./fp/pipe.ts";
