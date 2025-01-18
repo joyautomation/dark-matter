@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { createFail, createSuccess, Result } from "./result.ts";
+import { createFail, createSuccess, type Result } from "./result.ts";
 import { allSuccess } from "./aggregate.ts";
 
 Deno.test("allSuccess - empty array returns true", () => {

@@ -1,6 +1,6 @@
 import { assertEquals } from "@std/assert";
 import { createSuccess, createFail } from "../result/result.ts";
-import { rpipe } from "./pipe.ts";
+import { rpipe } from "./rpipe.ts";
 
 Deno.test("resultPipe - single successful function", async () => {
   const result = await rpipe(() => createSuccess(1));
