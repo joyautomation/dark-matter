@@ -1,4 +1,4 @@
-import { createFail, createSuccess, type Result } from "../result/result.ts";
+import { createFail, type Result } from "../result/result.ts";
 
 /**
  * Executes a series of conditions and returns the Result of the first matching condition's action.
