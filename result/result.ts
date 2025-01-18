@@ -36,6 +36,18 @@ export interface ResultSuccess<T> {
 }
 
 /**
+ * Converts an error into a string representation.
+ *
+ * @param error - The error to convert into a string
+ * @param prefix - An optional prefix to add to the error string
+ * @returns A string representation of the error
+ */
+export const createErrorString = (error: unknown, prefix = ""): string =>
+  `${prefix}${
+    error instanceof Error ? error.stack || error.message : String(error)
+  }`;
+
+/**
  * Represents a failed result containing an error message.
  */
 export interface ResultFail {

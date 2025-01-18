@@ -1,6 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertThrows } from "@std/assert";
 import { cond } from "./cond.ts";
-import { isSuccess } from "../result/result.ts";
 
 Deno.test("cond - matches first true condition and executes its action", () => {
   const result = cond(5, [
@@ -17,10 +16,7 @@ Deno.test("cond - matches first true condition and executes its action", () => {
       action: () => "equals 0",
     },
   ]);
-  assertEquals(isSuccess(result), true);
-  if (isSuccess(result)) {
-    assertEquals(result.output, "greater than 0");
-  }
+  assertEquals(result, "greater than 0");
 });
 
 Deno.test("cond - works with different types", () => {
@@ -34,23 +30,21 @@ Deno.test("cond - works with different types", () => {
       action: (s: string) => s.charAt(0),
     },
   ]);
-  assertEquals(isSuccess(result), true);
-  if (isSuccess(result)) {
-    assertEquals(result.output, "t");
-  }
+  assertEquals(result, "t");
 });
 
-Deno.test("cond - returns failure when no condition matches", () => {
-  const result = cond(5, [
-    {
-      condition: (n: number) => n < 0,
-      action: () => "negative",
-    },
-  ]);
-  assertEquals(isSuccess(result), false);
-  if (!isSuccess(result)) {
-    assertEquals(result.error, "No conditional found");
-  }
+Deno.test("cond - throws error when no condition matches", () => {
+  assertThrows(
+    () =>
+      cond(5, [
+        {
+          condition: (n: number) => n < 0,
+          action: () => "negative",
+        },
+      ]),
+    Error,
+    "No conditional found"
+  );
 });
 
 Deno.test("cond - handles complex conditions and transformations", () => {
@@ -76,8 +70,5 @@ Deno.test("cond - handles complex conditions and transformations", () => {
     },
   ]);
 
-  assertEquals(isSuccess(result), true);
-  if (isSuccess(result)) {
-    assertEquals(result.output, "Adult");
-  }
+  assertEquals(result, "Adult");
 });

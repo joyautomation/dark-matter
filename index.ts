@@ -102,26 +102,6 @@ export { createSuccess } from "./result/result.ts";
 export { unwrapResults } from "./result/result.ts";
 
 /**
- * Pipes a series of Result-returning functions together, where each function
- * receives the output of the previous function. Supports both synchronous and
- * asynchronous functions. If any function returns a failure, the pipe stops
- * and returns that failure.
- *
- * @template T - Tuple of function types that return Result or Promise<Result>
- * @param fns - Functions to pipe together
- * @returns Promise of the final Result
- * @example
- * ```ts
- * const result = await resultPipe(
- *   () => createSuccess(1),
- *   (n) => createSuccess(n + 1),
- *   (n) => createSuccess(n * 2)
- * ); // Success(4)
- * ```
- */
-export { rpipe } from "./fp/rpipe.ts";
-
-/**
  * Type guard that checks if all Results in an array are successful.
  * Provides tuple type inference for up to 9 elements.
  *
@@ -189,26 +169,49 @@ export type { ResultSuccess } from "./result/result.ts";
 export type { ResultFail } from "./result/result.ts";
 
 /**
- * Evaluates a series of condition-action pairs and returns the result of the first matching condition's action.
- * Returns a Result containing either the action's output or an error if no conditions match.
+ * Evaluates a series of condition-action pairs and returns the output of the first matching condition's action.
+ * Each condition can return a different type, making this function highly flexible for branching logic.
+ *
+ * @template T - The type of the input value
+ * @template U - The return type of the actions
+ * @param {T} args - The value to test against conditions
+ * @param {Array<{ condition: (input: T) => boolean; action: (input: T) => U }>} conditionals - Array of condition-action pairs
+ * @returns {U} The output of the first matching action
+ * @throws {Error} When no condition matches
+ * @example
+ * ```ts
+ * const result = cond(
+ *   5,
+ *   [
+ *     { condition: (n) => n < 0, action: (n) => `${n} is negative` },
+ *     { condition: (n) => n > 0, action: (n) => `${n} is positive` }
+ *   ]
+ * ); // "5 is positive"
+ * ```
+ */
+export { cond } from "./fp/cond.ts";
+
+/**
+ * Evaluates a series of condition-action pairs and returns the Result of the first matching condition's action.
+ * Each condition returns a Result type, making this function highly flexible for branching logic with error handling.
  *
  * @template T - The type of the input value to check against conditions
- * @template U - The type of value returned by the action functions
+ * @template U - The type of value wrapped in the Result returned by the action functions
  *
  * @example
  * ```ts
- * const ageGroup = cond(25, [
+ * const ageGroup = rcond(25, [
  *   {
  *     condition: (age: number) => age >= 65,
- *     action: () => "Senior"
+ *     action: () => createSuccess("Senior")
  *   },
  *   {
  *     condition: (age: number) => age >= 18,
- *     action: () => "Adult"
+ *     action: () => createSuccess("Adult")
  *   },
  *   {
  *     condition: (age: number) => age >= 13,
- *     action: () => "Teen"
+ *     action: () => createSuccess("Teen")
  *   }
  * ]);
  *
@@ -217,7 +220,7 @@ export type { ResultFail } from "./result/result.ts";
  * }
  * ```
  */
-export { cond } from "./fp/cond.ts";
+export { rcond } from "./fp/rcond.ts";
 
 /**
  * Pipes a series of functions together, where each function receives the output of the previous function.
@@ -236,3 +239,23 @@ export { cond } from "./fp/cond.ts";
  * ```
  */
 export { pipe } from "./fp/pipe.ts";
+
+/**
+ * Pipes a series of Result-returning functions together, where each function
+ * receives the output of the previous function. Supports both synchronous and
+ * asynchronous functions. If any function returns a failure, the pipe stops
+ * and returns that failure.
+ *
+ * @template T - Tuple of function types that return Result or Promise<Result>
+ * @param fns - Functions to pipe together
+ * @returns Promise of the final Result
+ * @example
+ * ```ts
+ * const result = await resultPipe(
+ *   () => createSuccess(1),
+ *   (n) => createSuccess(n + 1),
+ *   (n) => createSuccess(n * 2)
+ * ); // Success(4)
+ * ```
+ */
+export { rpipe } from "./fp/rpipe.ts";
