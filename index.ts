@@ -296,3 +296,31 @@ export { rpipeAsync } from "./fp/rpipe.ts";
  * ```
  */
 export { pipeAsync } from "./fp/pipe.ts";
+
+/**
+ * Creates a formatted error string from an error object or any unknown value.
+ * If the input is an Error object, it will use the stack trace if available,
+ * otherwise falling back to the error message. For non-Error values, it converts
+ * them to strings.
+ *
+ * @param {unknown} error - The error object or value to format
+ * @param {string} [prefix=""] - Optional prefix to prepend to the error string
+ * @returns {string} A formatted error string with optional prefix
+ *
+ * @example
+ * ```ts
+ * // With an Error object
+ * const error = new Error("Something went wrong");
+ * createErrorString(error); // Returns stack trace or "Something went wrong"
+ *
+ * // With a prefix
+ * createErrorString(error, "MyApp: "); // Returns "MyApp: Something went wrong"
+ *
+ * // With a non-Error value
+ * createErrorString("Invalid input"); // Returns "Invalid input"
+ * ```
+ */
+export const createErrorString = (error: unknown, prefix = ""): string =>
+  `${prefix}${
+    error instanceof Error ? error.stack || error.message : String(error)
+  }`;
