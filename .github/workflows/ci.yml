@@ -20,3 +20,6 @@ jobs:
 
       - name: Run tests
         run: deno test --allow-env
+      
+      - name: Check documentation
+        run: deno doc --lint index.ts
