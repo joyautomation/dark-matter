@@ -153,13 +153,80 @@ export const createFail = (error: string): ResultFail => ({
  * const [num, str] = unwrapResults(results); // [1, "test"]
  * ```
  */
-export function unwrapResults<T extends Result<unknown>[]>(
-  results: [...T]
-): { [K in keyof T]: T[K] extends Result<infer U> ? U : never } {
+export function unwrapResults<A>(results: readonly [ResultSuccess<A>]): [A];
+export function unwrapResults<A, B>(
+  results: readonly [ResultSuccess<A>, ResultSuccess<B>]
+): [A, B];
+export function unwrapResults<A, B, C>(
+  results: readonly [ResultSuccess<A>, ResultSuccess<B>, ResultSuccess<C>]
+): [A, B, C];
+export function unwrapResults<A, B, C, D>(
+  results: readonly [
+    ResultSuccess<A>,
+    ResultSuccess<B>,
+    ResultSuccess<C>,
+    ResultSuccess<D>
+  ]
+): [A, B, C, D];
+export function unwrapResults<A, B, C, D, E>(
+  results: readonly [
+    ResultSuccess<A>,
+    ResultSuccess<B>,
+    ResultSuccess<C>,
+    ResultSuccess<D>,
+    ResultSuccess<E>
+  ]
+): [A, B, C, D, E];
+export function unwrapResults<A, B, C, D, E, F>(
+  results: readonly [
+    ResultSuccess<A>,
+    ResultSuccess<B>,
+    ResultSuccess<C>,
+    ResultSuccess<D>,
+    ResultSuccess<E>,
+    ResultSuccess<F>
+  ]
+): [A, B, C, D, E, F];
+export function unwrapResults<A, B, C, D, E, F, G>(
+  results: readonly [
+    ResultSuccess<A>,
+    ResultSuccess<B>,
+    ResultSuccess<C>,
+    ResultSuccess<D>,
+    ResultSuccess<E>,
+    ResultSuccess<F>,
+    ResultSuccess<G>
+  ]
+): [A, B, C, D, E, F, G];
+export function unwrapResults<A, B, C, D, E, F, G, H>(
+  results: readonly [
+    ResultSuccess<A>,
+    ResultSuccess<B>,
+    ResultSuccess<C>,
+    ResultSuccess<D>,
+    ResultSuccess<E>,
+    ResultSuccess<F>,
+    ResultSuccess<G>,
+    ResultSuccess<H>
+  ]
+): [A, B, C, D, E, F, G, H];
+export function unwrapResults<A, B, C, D, E, F, G, H, I>(
+  results: readonly [
+    ResultSuccess<A>,
+    ResultSuccess<B>,
+    ResultSuccess<C>,
+    ResultSuccess<D>,
+    ResultSuccess<E>,
+    ResultSuccess<F>,
+    ResultSuccess<G>,
+    ResultSuccess<H>,
+    ResultSuccess<I>
+  ]
+): [A, B, C, D, E, F, G, H, I];
+export function unwrapResults<T extends ResultSuccess<unknown>[]>(
+  results: readonly [...T]
+): { [K in keyof T]: T[K] extends ResultSuccess<infer U> ? U : never } {
   return results.map((r) => {
-    if (!isSuccess(r)) {
-      throw new Error(`Cannot unwrap failed result: ${r.error}`);
-    }
     return r.output;
-  }) as { [K in keyof T]: T[K] extends Result<infer U> ? U : never };
+  }) as { [K in keyof T]: T[K] extends ResultSuccess<infer U> ? U : never };
 }
