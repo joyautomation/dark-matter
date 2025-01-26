@@ -324,3 +324,7 @@ export const createErrorString = (error: unknown, prefix = ""): string =>
   `${prefix}${
     error instanceof Error ? error.stack || error.message : String(error)
   }`;
+
+export { flatten } from "./flatten.ts";
+
+export { unflatten } from "./flatten.ts";
