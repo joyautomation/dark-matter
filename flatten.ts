@@ -10,7 +10,9 @@
  * const result = flatten(input);
  * // Result: [{ id: 'foo', bar: 1 }, { id: 'baz', qux: 2 }]
  */
-export const flatten = <T>(obj: Record<string, T>) => {
+export const flatten = <T>(
+  obj: Record<string, T>
+): Array<{ id: string } & T> => {
   return Object.entries(obj).map(([key, value]) => ({
     ...value,
     id: key,
@@ -46,7 +48,7 @@ export const unflatten = <
   T extends { id?: string | null; name?: string | null }
 >(
   arr?: T[] | null
-): { [key: string]: T } => {
+): Record<string, T> => {
   if (!arr) {
     return {};
   }
