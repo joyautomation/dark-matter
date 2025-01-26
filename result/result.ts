@@ -139,27 +139,193 @@ export const createFail = (error: string): ResultFail => ({
 });
 
 /**
- * Unwraps an array of Results into an array of their successful values.
- * If any Result in the array is a failure, throws an error.
- *
- * @template T - Tuple type extending Result<unknown>[]
- * @param results - Array of Results to unwrap
- * @returns Array of unwrapped values with correct types
- * @throws Error if any Result is a failure
- *
+ * Unwraps a single successful Result into its value.
+ * @template A - Type of the first Result value
+ * @param results - Tuple containing one successful Result
+ * @returns Tuple containing the unwrapped value
+ */
+export function unwrapResults<A>(results: readonly [ResultSuccess<A>]): [A];
+
+/**
+ * Unwraps two successful Results into their values.
+ * @template A - Type of the first Result value
+ * @template B - Type of the second Result value
+ * @param results - Tuple containing two successful Results
+ * @returns Tuple containing the unwrapped values in order
+ */
+export function unwrapResults<A, B>(
+  results: readonly [ResultSuccess<A>, ResultSuccess<B>]
+): [A, B];
+
+/**
+ * Unwraps three successful Results into their values.
+ * @template A - Type of the first Result value
+ * @template B - Type of the second Result value
+ * @template C - Type of the third Result value
+ * @param results - Tuple containing three successful Results
+ * @returns Tuple containing the unwrapped values in order
+ */
+export function unwrapResults<A, B, C>(
+  results: readonly [ResultSuccess<A>, ResultSuccess<B>, ResultSuccess<C>]
+): [A, B, C];
+
+/**
+ * Unwraps four successful Results into their values.
+ * @template A - Type of the first Result value
+ * @template B - Type of the second Result value
+ * @template C - Type of the third Result value
+ * @template D - Type of the fourth Result value
+ * @param results - Tuple containing four successful Results
+ * @returns Tuple containing the unwrapped values in order
+ */
+export function unwrapResults<A, B, C, D>(
+  results: readonly [
+    ResultSuccess<A>,
+    ResultSuccess<B>,
+    ResultSuccess<C>,
+    ResultSuccess<D>
+  ]
+): [A, B, C, D];
+
+/**
+ * Unwraps five successful Results into their values.
+ * @template A - Type of the first Result value
+ * @template B - Type of the second Result value
+ * @template C - Type of the third Result value
+ * @template D - Type of the fourth Result value
+ * @template E - Type of the fifth Result value
+ * @param results - Tuple containing five successful Results
+ * @returns Tuple containing the unwrapped values in order
+ */
+export function unwrapResults<A, B, C, D, E>(
+  results: readonly [
+    ResultSuccess<A>,
+    ResultSuccess<B>,
+    ResultSuccess<C>,
+    ResultSuccess<D>,
+    ResultSuccess<E>
+  ]
+): [A, B, C, D, E];
+
+/**
+ * Unwraps six successful Results into their values.
+ * @template A - Type of the first Result value
+ * @template B - Type of the second Result value
+ * @template C - Type of the third Result value
+ * @template D - Type of the fourth Result value
+ * @template E - Type of the fifth Result value
+ * @template F - Type of the sixth Result value
+ * @param results - Tuple containing six successful Results
+ * @returns Tuple containing the unwrapped values in order
+ */
+export function unwrapResults<A, B, C, D, E, F>(
+  results: readonly [
+    ResultSuccess<A>,
+    ResultSuccess<B>,
+    ResultSuccess<C>,
+    ResultSuccess<D>,
+    ResultSuccess<E>,
+    ResultSuccess<F>
+  ]
+): [A, B, C, D, E, F];
+
+/**
+ * Unwraps seven successful Results into their values.
+ * @template A - Type of the first Result value
+ * @template B - Type of the second Result value
+ * @template C - Type of the third Result value
+ * @template D - Type of the fourth Result value
+ * @template E - Type of the fifth Result value
+ * @template F - Type of the sixth Result value
+ * @template G - Type of the seventh Result value
+ * @param results - Tuple containing seven successful Results
+ * @returns Tuple containing the unwrapped values in order
+ */
+export function unwrapResults<A, B, C, D, E, F, G>(
+  results: readonly [
+    ResultSuccess<A>,
+    ResultSuccess<B>,
+    ResultSuccess<C>,
+    ResultSuccess<D>,
+    ResultSuccess<E>,
+    ResultSuccess<F>,
+    ResultSuccess<G>
+  ]
+): [A, B, C, D, E, F, G];
+
+/**
+ * Unwraps eight successful Results into their values.
+ * @template A - Type of the first Result value
+ * @template B - Type of the second Result value
+ * @template C - Type of the third Result value
+ * @template D - Type of the fourth Result value
+ * @template E - Type of the fifth Result value
+ * @template F - Type of the sixth Result value
+ * @template G - Type of the seventh Result value
+ * @template H - Type of the eighth Result value
+ * @param results - Tuple containing eight successful Results
+ * @returns Tuple containing the unwrapped values in order
+ */
+export function unwrapResults<A, B, C, D, E, F, G, H>(
+  results: readonly [
+    ResultSuccess<A>,
+    ResultSuccess<B>,
+    ResultSuccess<C>,
+    ResultSuccess<D>,
+    ResultSuccess<E>,
+    ResultSuccess<F>,
+    ResultSuccess<G>,
+    ResultSuccess<H>
+  ]
+): [A, B, C, D, E, F, G, H];
+
+/**
+ * Unwraps nine successful Results into their values.
+ * @template A - Type of the first Result value
+ * @template B - Type of the second Result value
+ * @template C - Type of the third Result value
+ * @template D - Type of the fourth Result value
+ * @template E - Type of the fifth Result value
+ * @template F - Type of the sixth Result value
+ * @template G - Type of the seventh Result value
+ * @template H - Type of the eighth Result value
+ * @template I - Type of the ninth Result value
+ * @param results - Tuple containing nine successful Results
+ * @returns Tuple containing the unwrapped values in order
+ */
+export function unwrapResults<A, B, C, D, E, F, G, H, I>(
+  results: readonly [
+    ResultSuccess<A>,
+    ResultSuccess<B>,
+    ResultSuccess<C>,
+    ResultSuccess<D>,
+    ResultSuccess<E>,
+    ResultSuccess<F>,
+    ResultSuccess<G>,
+    ResultSuccess<H>,
+    ResultSuccess<I>
+  ]
+): [A, B, C, D, E, F, G, H, I];
+
+/**
+ * Generic implementation that unwraps an array of successful Results into their values.
+ * This implementation handles arrays of any length and falls back to a mapped type
+ * for type inference.
+ * 
+ * @template T - Array type extending ResultSuccess<unknown>[]
+ * @param results - Array of successful Results to unwrap
+ * @returns Array of unwrapped values with inferred types
+ * 
  * @example
  * ```ts
  * const results = [createSuccess(1), createSuccess("test")];
  * const [num, str] = unwrapResults(results); // [1, "test"]
  * ```
  */
-export function unwrapResults<T extends Result<unknown>[]>(
-  results: [...T]
-): { [K in keyof T]: T[K] extends Result<infer U> ? U : never } {
+export function unwrapResults<T extends ResultSuccess<unknown>[]>(
+  results: readonly [...T]
+): { [K in keyof T]: T[K] extends ResultSuccess<infer U> ? U : never } {
   return results.map((r) => {
-    if (!isSuccess(r)) {
-      throw new Error(`Cannot unwrap failed result: ${r.error}`);
-    }
     return r.output;
-  }) as { [K in keyof T]: T[K] extends Result<infer U> ? U : never };
+  }) as { [K in keyof T]: T[K] extends ResultSuccess<infer U> ? U : never };
 }

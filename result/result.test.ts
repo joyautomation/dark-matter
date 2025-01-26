@@ -6,6 +6,7 @@ import {
   createSuccess,
   createFail,
   unwrapResults,
+  ResultSuccess,
 } from "./result.ts";
 
 // Test createSuccess
@@ -75,33 +76,6 @@ Deno.test("isFail - type guard narrows type correctly", () => {
   }
 });
 
-// Test unwrapResults
-Deno.test("unwrapResults - unwraps tuple of success results", () => {
-  const results = [
-    createSuccess(1),
-    createSuccess("test"),
-    createSuccess({ key: "value" }),
-  ];
-
-  const unwrapped = unwrapResults(results);
-  assertEquals(unwrapped, [1, "test", { key: "value" }]);
-});
-
-Deno.test("unwrapResults - throws error when unwrapping fail result", () => {
-  const results = [createSuccess(1), createFail("error"), createSuccess(3)];
-
-  let thrown = false;
-  try {
-    unwrapResults(results);
-  } catch (e) {
-    thrown = true;
-    if (e instanceof Error) {
-      assertEquals(e.message, "Cannot unwrap failed result: error");
-    }
-  }
-  assertEquals(thrown, true);
-});
-
 // Test type inference
 Deno.test("Result type - infers correct types", () => {
   const numberResult: Result<number> = createSuccess(42);
@@ -113,4 +87,22 @@ Deno.test("Result type - infers correct types", () => {
   assertEquals(isSuccess(stringResult), true);
   assertEquals(isSuccess(objectResult), true);
   assertEquals(isFail(failResult), true);
+});
+
+// Test unwrapResults with different types
+Deno.test("unwrapResults - works with tuples of different lengths", () => {
+  const results: readonly [
+    ResultSuccess<number>,
+    ResultSuccess<string>,
+    ResultSuccess<{ key: string }>,
+    ResultSuccess<[number, number, number]>
+  ] = [
+    createSuccess(1),
+    createSuccess("test"),
+    createSuccess({ key: "value" }),
+    createSuccess([1, 2, 3]),
+  ];
+
+  const unwrapped = unwrapResults(results);
+  assertEquals(unwrapped, [1, "test", { key: "value" }, [1, 2, 3]]);
 });
