@@ -18,6 +18,30 @@ export const flatten = <T>(obj: Record<string, T>) => {
   }));
 };
 
+/**
+ * Converts an array of objects back into an object, using each item's 'id' or 'name' as the key.
+ * If an item has both 'id' and 'name', 'id' takes precedence.
+ * Items without either 'id' or 'name' are skipped.
+ *
+ * @template T - Type of objects in the array, must potentially have 'id' and/or 'name' properties
+ * @param {T[] | null | undefined} arr - Array of objects to convert, or null/undefined
+ * @returns {{ [key: string]: T }} Object with keys from items' id/name properties and values from the items themselves
+ *
+ * @example
+ * // Using id
+ * unflatten([{ id: 'foo', value: 1 }, { id: 'bar', value: 2 }])
+ * // => { foo: { id: 'foo', value: 1 }, bar: { id: 'bar', value: 2 } }
+ *
+ * @example
+ * // Falling back to name
+ * unflatten([{ name: 'foo', value: 1 }])
+ * // => { foo: { name: 'foo', value: 1 } }
+ *
+ * @example
+ * // Handling null/undefined
+ * unflatten(null) // => {}
+ * unflatten(undefined) // => {}
+ */
 export const unflatten = <
   T extends { id?: string | null; name?: string | null }
 >(
