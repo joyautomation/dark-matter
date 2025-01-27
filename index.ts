@@ -324,3 +324,24 @@ export const createErrorString = (error: unknown, prefix = ""): string =>
   `${prefix}${
     error instanceof Error ? error.stack || error.message : String(error)
   }`;
+
+/**
+ * Flattens an object into an array of objects, adding 'id' and 'name' properties to each.
+ * @template T - The type of the values in the input object
+ * @example
+ * const input = { foo: { bar: 1 }, baz: { qux: 2 } };
+ * const result = flatten(input);
+ * // Result: [{ id: 'foo', name: 'foo', bar: 1 }, { id: 'baz', name: 'baz', qux: 2 }]
+ */
+export { flatten } from "./flatten.ts";
+
+/**
+ * Converts an array of objects with 'id' or 'name' properties back into an object.
+ * The 'id' or 'name' property of each item becomes the key in the resulting object.
+ * @template T - The type of objects in the input array
+ * @example
+ * const input = [{ id: 'foo', bar: 1 }, { id: 'baz', qux: 2 }];
+ * const result = unflatten(input);
+ * // Result: { foo: { id: 'foo', bar: 1 }, baz: { id: 'baz', qux: 2 } }
+ */
+export { unflatten } from "./flatten.ts";
