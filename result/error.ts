@@ -1,4 +1,4 @@
-import { createFail, createSuccess } from "./result.ts";
+import { createFail, createSuccess, Result } from "./result.ts";
 
 /**
  * Creates a formatted error string from an error object or any unknown value.
@@ -73,7 +73,7 @@ export const createErrorProperties = (error: unknown, context = "") => ({
  * }
  * ```
  */
-export const rTry = <T, U>(fn: (args?: U) => T, args?: U) => {
+export const rTry = <T, U>(fn: (args?: U) => T, args?: U): Result<T> => {
   try {
     return createSuccess(fn(args));
   } catch (error) {
@@ -109,8 +109,8 @@ export const rTry = <T, U>(fn: (args?: U) => T, args?: U) => {
  */
 export const rTryAsync = async <T, U>(
   fn: (args?: U) => Promise<T>,
-  args?: U
-) => {
+  args?: U,
+): Promise<Result<T>> => {
   try {
     const result = await fn(args);
     return createSuccess(result);
