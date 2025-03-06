@@ -145,19 +145,21 @@ export const createFail = (
   error:
     | string
     | {
-        error: string;
-        message?: string;
-        stack?: string;
-        cause?: unknown;
-        name?: string;
-      }
+      error: string;
+      message?: string;
+      stack?: string;
+      cause?: unknown;
+      name?: string;
+    },
 ): ResultFail => ({
   success: false,
   error: typeof error === "string" ? error : error.error,
-  message: typeof error === "string" ? undefined : error.message,
-  stack: typeof error === "string" ? undefined : error.stack,
-  cause: typeof error === "string" ? undefined : error.cause,
-  name: typeof error === "string" ? undefined : error.name,
+  ...(typeof error === "string" ? {} : {
+    message: error.message,
+    stack: error.stack,
+    cause: error.cause,
+    name: error.name,
+  }),
 });
 
 /**
@@ -176,7 +178,7 @@ export function unwrapResults<A>(results: readonly [ResultSuccess<A>]): [A];
  * @returns Tuple containing the unwrapped values in order
  */
 export function unwrapResults<A, B>(
-  results: readonly [ResultSuccess<A>, ResultSuccess<B>]
+  results: readonly [ResultSuccess<A>, ResultSuccess<B>],
 ): [A, B];
 
 /**
@@ -188,7 +190,7 @@ export function unwrapResults<A, B>(
  * @returns Tuple containing the unwrapped values in order
  */
 export function unwrapResults<A, B, C>(
-  results: readonly [ResultSuccess<A>, ResultSuccess<B>, ResultSuccess<C>]
+  results: readonly [ResultSuccess<A>, ResultSuccess<B>, ResultSuccess<C>],
 ): [A, B, C];
 
 /**
@@ -205,8 +207,8 @@ export function unwrapResults<A, B, C, D>(
     ResultSuccess<A>,
     ResultSuccess<B>,
     ResultSuccess<C>,
-    ResultSuccess<D>
-  ]
+    ResultSuccess<D>,
+  ],
 ): [A, B, C, D];
 
 /**
@@ -225,8 +227,8 @@ export function unwrapResults<A, B, C, D, E>(
     ResultSuccess<B>,
     ResultSuccess<C>,
     ResultSuccess<D>,
-    ResultSuccess<E>
-  ]
+    ResultSuccess<E>,
+  ],
 ): [A, B, C, D, E];
 
 /**
@@ -247,8 +249,8 @@ export function unwrapResults<A, B, C, D, E, F>(
     ResultSuccess<C>,
     ResultSuccess<D>,
     ResultSuccess<E>,
-    ResultSuccess<F>
-  ]
+    ResultSuccess<F>,
+  ],
 ): [A, B, C, D, E, F];
 
 /**
@@ -271,8 +273,8 @@ export function unwrapResults<A, B, C, D, E, F, G>(
     ResultSuccess<D>,
     ResultSuccess<E>,
     ResultSuccess<F>,
-    ResultSuccess<G>
-  ]
+    ResultSuccess<G>,
+  ],
 ): [A, B, C, D, E, F, G];
 
 /**
@@ -297,8 +299,8 @@ export function unwrapResults<A, B, C, D, E, F, G, H>(
     ResultSuccess<E>,
     ResultSuccess<F>,
     ResultSuccess<G>,
-    ResultSuccess<H>
-  ]
+    ResultSuccess<H>,
+  ],
 ): [A, B, C, D, E, F, G, H];
 
 /**
@@ -325,8 +327,8 @@ export function unwrapResults<A, B, C, D, E, F, G, H, I>(
     ResultSuccess<F>,
     ResultSuccess<G>,
     ResultSuccess<H>,
-    ResultSuccess<I>
-  ]
+    ResultSuccess<I>,
+  ],
 ): [A, B, C, D, E, F, G, H, I];
 
 /**
@@ -345,7 +347,7 @@ export function unwrapResults<A, B, C, D, E, F, G, H, I>(
  * ```
  */
 export function unwrapResults<T extends ResultSuccess<unknown>[]>(
-  results: readonly [...T]
+  results: readonly [...T],
 ): { [K in keyof T]: T[K] extends ResultSuccess<infer U> ? U : never } {
   return results.map((r) => {
     return r.output;
