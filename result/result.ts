@@ -53,8 +53,16 @@ export const createErrorString = (error: unknown, prefix = ""): string =>
 export interface ResultFail {
   /** Indicates this is a failed result */
   success: false;
-  /** The error message describing what went wrong */
+  /** Full error message string */
   error: string;
+  /** short error message */
+  message?: string;
+  /** full stack trace */
+  stack?: string;
+  /** underlying cause of the error */
+  cause?: unknown;
+  /** error type name */
+  name?: string;
 }
 
 /**
@@ -133,9 +141,23 @@ export const createSuccess = <T>(output: T): ResultSuccess<T> => ({
  * console.log(result.error); // "Something went wrong"
  * ```
  */
-export const createFail = (error: string): ResultFail => ({
+export const createFail = (
+  error:
+    | string
+    | {
+        error: string;
+        message?: string;
+        stack?: string;
+        cause?: unknown;
+        name?: string;
+      }
+): ResultFail => ({
   success: false,
-  error,
+  error: typeof error === "string" ? error : error.error,
+  message: typeof error === "string" ? undefined : error.message,
+  stack: typeof error === "string" ? undefined : error.stack,
+  cause: typeof error === "string" ? undefined : error.cause,
+  name: typeof error === "string" ? undefined : error.name,
 });
 
 /**
@@ -311,11 +333,11 @@ export function unwrapResults<A, B, C, D, E, F, G, H, I>(
  * Generic implementation that unwraps an array of successful Results into their values.
  * This implementation handles arrays of any length and falls back to a mapped type
  * for type inference.
- * 
+ *
  * @template T - Array type extending ResultSuccess<unknown>[]
  * @param results - Array of successful Results to unwrap
  * @returns Array of unwrapped values with inferred types
- * 
+ *
  * @example
  * ```ts
  * const results = [createSuccess(1), createSuccess("test")];
