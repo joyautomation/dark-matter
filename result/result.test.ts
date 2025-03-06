@@ -1,12 +1,12 @@
 import { assertEquals } from "@std/assert";
 import {
-  type Result,
-  isSuccess,
-  isFail,
-  createSuccess,
   createFail,
-  unwrapResults,
+  createSuccess,
+  isFail,
+  isSuccess,
+  type Result,
   ResultSuccess,
+  unwrapResults,
 } from "./result.ts";
 
 // Test createSuccess
@@ -95,7 +95,7 @@ Deno.test("unwrapResults - works with tuples of different lengths", () => {
     ResultSuccess<number>,
     ResultSuccess<string>,
     ResultSuccess<{ key: string }>,
-    ResultSuccess<[number, number, number]>
+    ResultSuccess<[number, number, number]>,
   ] = [
     createSuccess(1),
     createSuccess("test"),

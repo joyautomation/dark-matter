@@ -53,8 +53,16 @@ export const createErrorString = (error: unknown, prefix = ""): string =>
 export interface ResultFail {
   /** Indicates this is a failed result */
   success: false;
-  /** The error message describing what went wrong */
+  /** Full error message string */
   error: string;
+  /** short error message */
+  message?: string;
+  /** full stack trace */
+  stack?: string;
+  /** underlying cause of the error */
+  cause?: unknown;
+  /** error type name */
+  name?: string;
 }
 
 /**
@@ -133,9 +141,25 @@ export const createSuccess = <T>(output: T): ResultSuccess<T> => ({
  * console.log(result.error); // "Something went wrong"
  * ```
  */
-export const createFail = (error: string): ResultFail => ({
+export const createFail = (
+  error:
+    | string
+    | {
+      error: string;
+      message?: string;
+      stack?: string;
+      cause?: unknown;
+      name?: string;
+    },
+): ResultFail => ({
   success: false,
-  error,
+  error: typeof error === "string" ? error : error.error,
+  ...(typeof error === "string" ? {} : {
+    message: error.message,
+    stack: error.stack,
+    cause: error.cause,
+    name: error.name,
+  }),
 });
 
 /**
@@ -154,7 +178,7 @@ export function unwrapResults<A>(results: readonly [ResultSuccess<A>]): [A];
  * @returns Tuple containing the unwrapped values in order
  */
 export function unwrapResults<A, B>(
-  results: readonly [ResultSuccess<A>, ResultSuccess<B>]
+  results: readonly [ResultSuccess<A>, ResultSuccess<B>],
 ): [A, B];
 
 /**
@@ -166,7 +190,7 @@ export function unwrapResults<A, B>(
  * @returns Tuple containing the unwrapped values in order
  */
 export function unwrapResults<A, B, C>(
-  results: readonly [ResultSuccess<A>, ResultSuccess<B>, ResultSuccess<C>]
+  results: readonly [ResultSuccess<A>, ResultSuccess<B>, ResultSuccess<C>],
 ): [A, B, C];
 
 /**
@@ -183,8 +207,8 @@ export function unwrapResults<A, B, C, D>(
     ResultSuccess<A>,
     ResultSuccess<B>,
     ResultSuccess<C>,
-    ResultSuccess<D>
-  ]
+    ResultSuccess<D>,
+  ],
 ): [A, B, C, D];
 
 /**
@@ -203,8 +227,8 @@ export function unwrapResults<A, B, C, D, E>(
     ResultSuccess<B>,
     ResultSuccess<C>,
     ResultSuccess<D>,
-    ResultSuccess<E>
-  ]
+    ResultSuccess<E>,
+  ],
 ): [A, B, C, D, E];
 
 /**
@@ -225,8 +249,8 @@ export function unwrapResults<A, B, C, D, E, F>(
     ResultSuccess<C>,
     ResultSuccess<D>,
     ResultSuccess<E>,
-    ResultSuccess<F>
-  ]
+    ResultSuccess<F>,
+  ],
 ): [A, B, C, D, E, F];
 
 /**
@@ -249,8 +273,8 @@ export function unwrapResults<A, B, C, D, E, F, G>(
     ResultSuccess<D>,
     ResultSuccess<E>,
     ResultSuccess<F>,
-    ResultSuccess<G>
-  ]
+    ResultSuccess<G>,
+  ],
 ): [A, B, C, D, E, F, G];
 
 /**
@@ -275,8 +299,8 @@ export function unwrapResults<A, B, C, D, E, F, G, H>(
     ResultSuccess<E>,
     ResultSuccess<F>,
     ResultSuccess<G>,
-    ResultSuccess<H>
-  ]
+    ResultSuccess<H>,
+  ],
 ): [A, B, C, D, E, F, G, H];
 
 /**
@@ -303,19 +327,19 @@ export function unwrapResults<A, B, C, D, E, F, G, H, I>(
     ResultSuccess<F>,
     ResultSuccess<G>,
     ResultSuccess<H>,
-    ResultSuccess<I>
-  ]
+    ResultSuccess<I>,
+  ],
 ): [A, B, C, D, E, F, G, H, I];
 
 /**
  * Generic implementation that unwraps an array of successful Results into their values.
  * This implementation handles arrays of any length and falls back to a mapped type
  * for type inference.
- * 
+ *
  * @template T - Array type extending ResultSuccess<unknown>[]
  * @param results - Array of successful Results to unwrap
  * @returns Array of unwrapped values with inferred types
- * 
+ *
  * @example
  * ```ts
  * const results = [createSuccess(1), createSuccess("test")];
@@ -323,7 +347,7 @@ export function unwrapResults<A, B, C, D, E, F, G, H, I>(
  * ```
  */
 export function unwrapResults<T extends ResultSuccess<unknown>[]>(
-  results: readonly [...T]
+  results: readonly [...T],
 ): { [K in keyof T]: T[K] extends ResultSuccess<infer U> ? U : never } {
   return results.map((r) => {
     return r.output;
