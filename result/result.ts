@@ -154,12 +154,10 @@ export const createFail = (
 ): ResultFail => ({
   success: false,
   error: typeof error === "string" ? error : error.error,
-  ...(typeof error === "string" ? {} : {
-    message: error.message,
-    stack: error.stack,
-    cause: error.cause,
-    name: error.name,
-  }),
+  message: typeof error === "string" ? undefined : error.message,
+  stack: typeof error === "string" ? undefined : error.stack,
+  cause: typeof error === "string" ? undefined : error.cause,
+  name: typeof error === "string" ? undefined : error.name,
 });
 
 /**
