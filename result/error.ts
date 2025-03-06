@@ -1,4 +1,9 @@
-import { createFail, createSuccess, Result } from "./result.ts";
+import {
+  createFail,
+  createSuccess,
+  type Result,
+  type ResultFail,
+} from "./result.ts";
 
 /**
  * Creates a formatted error string from an error object or any unknown value.
@@ -38,7 +43,10 @@ export const createErrorString = (error: unknown, context = ""): string =>
  *   - cause: The underlying cause of the error if available
  *   - name: The error type name if available
  */
-export const createErrorProperties = (error: unknown, context = "") => ({
+export const createErrorProperties = (
+  error: unknown,
+  context = "",
+): Omit<ResultFail, "success"> & { context: string } => ({
   error: createErrorString(error, context),
   context,
   message: error instanceof Error ? error.message : undefined,
