@@ -320,7 +320,7 @@ export { unflatten } from "./flatten.ts";
 
 /**
  * Re-exports utility functions for error handling and formatting.
- * 
+ *
  * @module
  */
 
@@ -328,5 +328,11 @@ export { unflatten } from "./flatten.ts";
  * @exports createErrorString - Creates a formatted error string from an error object or any unknown value
  * @exports createErrorProperties - Creates a standardized error properties object from any error value
  * @exports rTry - Wraps a function in a try-catch block and returns a Result type
+ * @exports rTryAsync - Wraps an asynchronous function in a try-catch block and returns a Promise<Result>
  */
-export { createErrorString, createErrorProperties, rTry } from "./result/error.ts";
+export {
+  createErrorProperties,
+  createErrorString,
+  rTry,
+  rTryAsync,
+} from "./result/error.ts";
