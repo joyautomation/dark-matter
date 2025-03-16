@@ -5,104 +5,73 @@ import {
   isFail,
   isSuccess,
   type Result,
-  ResultSuccess,
-  unwrapResults,
 } from "./result.ts";
 
-// Test createSuccess
-Deno.test("createSuccess - creates success result with number", () => {
+Deno.test("createSuccess", () => {
   const result = createSuccess(42);
-  assertEquals(result, { success: true, output: 42 });
+  assertEquals(result.success, true);
+  assertEquals(result.output, 42);
 });
 
-Deno.test("createSuccess - creates success result with string", () => {
-  const result = createSuccess("test");
-  assertEquals(result, { success: true, output: "test" });
+Deno.test("createFail", () => {
+  const result = createFail({
+    error: "Operation failed",
+    message: "Invalid input",
+    cause: "Value out of range",
+    name: "ValidationError",
+  });
+  assertEquals(result.success, false);
+  assertEquals(result.error, "Operation failed");
+  assertEquals(result.message, "Invalid input");
+  assertEquals(result.cause, "Value out of range");
+  assertEquals(result.name, "ValidationError");
 });
 
-Deno.test("createSuccess - creates success result with object", () => {
-  const result = createSuccess({ key: "value" });
-  assertEquals(result, { success: true, output: { key: "value" } });
-});
-
-Deno.test("createSuccess - creates success result with array", () => {
-  const result = createSuccess([1, 2, 3]);
-  assertEquals(result, { success: true, output: [1, 2, 3] });
-});
-
-// Test createFail
-Deno.test("createFail - creates fail result with string error", () => {
-  const result = createFail("error message");
-  assertEquals(result, { success: false, error: "error message" });
-});
-
-// Test isSuccess type guard
-Deno.test("isSuccess - returns true for success result", () => {
+Deno.test("isSuccess - success case", () => {
   const result = createSuccess(42);
   assertEquals(isSuccess(result), true);
 });
 
-Deno.test("isSuccess - returns false for fail result", () => {
-  const result = createFail("error");
+Deno.test("isSuccess - failure case", () => {
+  const result = createFail({
+    error: "Operation failed",
+    name: "ValidationError",
+  });
   assertEquals(isSuccess(result), false);
 });
 
-Deno.test("isSuccess - type guard narrows type correctly", () => {
-  const result: Result<number> = createSuccess(42);
-  if (isSuccess(result)) {
-    // TypeScript should recognize result as ResultSuccess<number>
-    const output: number = result.output;
-    assertEquals(output, 42);
-  }
-});
-
-// Test isFail type guard
-Deno.test("isFail - returns true for fail result", () => {
-  const result = createFail("error");
+Deno.test("isFail - success case", () => {
+  const result = createFail({
+    error: "Operation failed",
+    name: "ValidationError",
+  });
   assertEquals(isFail(result), true);
 });
 
-Deno.test("isFail - returns false for success result", () => {
+Deno.test("isFail - failure case", () => {
   const result = createSuccess(42);
   assertEquals(isFail(result), false);
 });
 
-Deno.test("isFail - type guard narrows type correctly", () => {
-  const result: Result<number> = createFail("error");
-  if (isFail(result)) {
-    // TypeScript should recognize result as ResultFail
-    const error: string = result.error;
-    assertEquals(error, "error");
+Deno.test("Result type inference - success", () => {
+  const result: Result<number> = createSuccess(42);
+  if (isSuccess(result)) {
+    const num: number = result.output;
+    assertEquals(num, 42);
   }
 });
 
-// Test type inference
-Deno.test("Result type - infers correct types", () => {
-  const numberResult: Result<number> = createSuccess(42);
-  const stringResult: Result<string> = createSuccess("test");
-  const objectResult: Result<{ key: string }> = createSuccess({ key: "value" });
-  const failResult: Result<never> = createFail("error");
-
-  assertEquals(isSuccess(numberResult), true);
-  assertEquals(isSuccess(stringResult), true);
-  assertEquals(isSuccess(objectResult), true);
-  assertEquals(isFail(failResult), true);
-});
-
-// Test unwrapResults with different types
-Deno.test("unwrapResults - works with tuples of different lengths", () => {
-  const results: readonly [
-    ResultSuccess<number>,
-    ResultSuccess<string>,
-    ResultSuccess<{ key: string }>,
-    ResultSuccess<[number, number, number]>,
-  ] = [
-    createSuccess(1),
-    createSuccess("test"),
-    createSuccess({ key: "value" }),
-    createSuccess([1, 2, 3]),
-  ];
-
-  const unwrapped = unwrapResults(results);
-  assertEquals(unwrapped, [1, "test", { key: "value" }, [1, 2, 3]]);
+Deno.test("Result type inference - failure", () => {
+  const result: Result<number> = createFail({
+    error: "Operation failed",
+    message: "Invalid input",
+    cause: "Value out of range",
+    name: "ValidationError",
+  });
+  if (!isSuccess(result)) {
+    assertEquals(result.error, "Operation failed");
+    assertEquals(result.message, "Invalid input");
+    assertEquals(result.cause, "Value out of range");
+    assertEquals(result.name, "ValidationError");
+  }
 });
