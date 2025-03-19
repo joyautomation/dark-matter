@@ -102,22 +102,11 @@ export { createSuccess } from "./result/result.ts";
 export { unwrapResults } from "./result/result.ts";
 
 /**
- * Type guard that checks if all Results in an array are successful.
- * Provides tuple type inference for up to 9 elements.
- *
- * @template T - Type of the array elements or tuple types
- * @param results - Array or tuple of Results to check
- * @returns True if all Results are successful, false otherwise
- * @example
- * ```ts
- * const results = [createSuccess(1), createSuccess("test")];
- * if (allSuccess(results)) {
- *   // TypeScript knows results is [ResultSuccess<number>, ResultSuccess<string>]
- *   console.log(results.map(r => r.output)); // [1, "test"]
- * }
- * ```
+ * Combines multiple Results into a single Result
+ * Preserves full error properties when returning failures
+ * @returns A Result containing all successful values, or the first failure encountered with full error details
  */
-export { allSuccess } from "./result/aggregate.ts";
+export { combineResults } from "./result/aggregate.ts";
 
 /**
  * A Result type that can either be successful with a value of type T,
@@ -167,6 +156,24 @@ export type { ResultSuccess } from "./result/result.ts";
  * ```
  */
 export type { ResultFail } from "./result/result.ts";
+
+/**
+ * A record type where each value is a Result type.
+ * Used for combining multiple Results in an object.
+ * 
+ * @template T - The type of the object containing Result values
+ * @example
+ * ```ts
+ * const results: ResultRecord<{
+ *   name: string;
+ *   age: number;
+ * }> = {
+ *   name: createSuccess("Alice"),
+ *   age: createSuccess(25)
+ * };
+ * ```
+ */
+export type { ResultRecord } from "./result/aggregate.ts";
 
 /**
  * Evaluates a series of condition-action pairs and returns the output of the first matching condition's action.

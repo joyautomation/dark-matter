@@ -1,73 +1,145 @@
 import { assertEquals } from "@std/assert";
 import { createFail, createSuccess, type Result } from "./result.ts";
-import { allSuccess } from "./aggregate.ts";
+import { combineResults, type ResultRecord } from "./aggregate.ts";
 
-Deno.test("allSuccess - empty array returns true", () => {
-  const results: Result<unknown>[] = [];
-  assertEquals(allSuccess(results), true);
-});
-
-Deno.test("allSuccess - array with single success returns true", () => {
-  const results = [createSuccess(1)];
-  assertEquals(allSuccess(results), true);
-});
-
-Deno.test("allSuccess - array with single failure returns false", () => {
-  const results = [createFail("error")];
-  assertEquals(allSuccess(results), false);
-});
-
-Deno.test("allSuccess - array with all successes returns true", () => {
-  const results: Result<unknown>[] = [
-    createSuccess(1),
-    createSuccess("test"),
-    createSuccess({ key: "value" }),
-  ];
-  assertEquals(allSuccess(results), true);
-});
-
-Deno.test("allSuccess - array with one failure returns false", () => {
-  const results: Result<unknown>[] = [
-    createSuccess(1),
-    createFail("error"),
-    createSuccess("test"),
-  ];
-  assertEquals(allSuccess(results), false);
-});
-
-Deno.test("allSuccess - array with all failures returns false", () => {
-  const results = [
-    createFail("error1"),
-    createFail("error2"),
-    createFail("error3"),
-  ];
-  assertEquals(allSuccess(results), false);
-});
-
-Deno.test("allSuccess - type guard works with tuple", () => {
-  const results: Result<unknown>[] = [
-    createSuccess(1),
-    createSuccess("test"),
-  ] as const;
-  if (allSuccess(results)) {
-    // TypeScript should recognize these as success results
-    const [num, str] = results;
-    assertEquals(num.output, 1);
-    assertEquals(str.output, "test");
-  } else {
-    throw new Error("Should be success");
+Deno.test("combineResults - array of successes", () => {
+  const results = [createSuccess(1), createSuccess(2), createSuccess(3)];
+  const combined = combineResults(results);
+  assertEquals(combined.success, true);
+  if (combined.success) {
+    assertEquals(combined.output, [1, 2, 3]);
   }
 });
 
-Deno.test("allSuccess - type guard fails with mixed results", () => {
-  const results: Result<unknown>[] = [
+Deno.test("combineResults - array with failure", () => {
+  const results = [
     createSuccess(1),
-    createFail("error"),
-  ] as const;
-  if (allSuccess(results)) {
-    throw new Error("Should not be success");
-  } else {
-    // TypeScript should recognize this branch will be taken
-    assertEquals(results[1].success, false);
+    createFail({
+      error: "Failed to process value",
+      cause: "Invalid input",
+      name: "ValidationError",
+    }),
+    createSuccess(3),
+  ];
+  const combined = combineResults(results);
+  assertEquals(combined.success, false);
+  if (!combined.success) {
+    assertEquals(combined.error, "Failed to process value");
+    assertEquals(combined.cause, "Invalid input");
+    assertEquals(combined.name, "ValidationError");
+  }
+});
+
+Deno.test("combineResults - empty array", () => {
+  const results: Result<number>[] = [];
+  const combined = combineResults(results);
+  assertEquals(combined.success, true);
+  if (combined.success) {
+    assertEquals(combined.output, []);
+  }
+});
+
+Deno.test("combineResults - object with all successes", () => {
+  const results = {
+    name: createSuccess("test"),
+    count: createSuccess(42),
+    active: createSuccess(true),
+  };
+  const combined = combineResults(results);
+  assertEquals(combined.success, true);
+  if (combined.success) {
+    assertEquals(combined.output, {
+      name: "test",
+      count: 42,
+      active: true,
+    });
+  }
+});
+
+Deno.test("combineResults - object with failure", () => {
+  const results = {
+    name: createSuccess("test"),
+    count: createFail({
+      error: "Invalid count",
+      cause: "Must be positive",
+      name: "ValidationError",
+    }),
+  };
+  const combined = combineResults(results);
+  assertEquals(combined.success, false);
+  if (!combined.success) {
+    assertEquals(combined.error, "Invalid count");
+    assertEquals(combined.cause, "Must be positive");
+    assertEquals(combined.name, "ValidationError");
+  }
+});
+
+Deno.test("combineResults - empty object", () => {
+  const results = {} as Record<string, Result<unknown>>;
+  const combined = combineResults(results);
+  assertEquals(combined.success, true);
+  if (combined.success) {
+    assertEquals(combined.output, {});
+  }
+});
+
+Deno.test("combineResults - preserves type safety for objects", () => {
+  type User = Record<string, unknown> & {
+    id: number;
+    name: string;
+    roles: string[];
+  };
+  
+  const results = {
+    id: createSuccess(1),
+    name: createSuccess("test"),
+    roles: createSuccess(["admin"]),
+  } satisfies ResultRecord<User>;
+  
+  const combined = combineResults(results);
+  assertEquals(combined.success, true);
+  if (combined.success) {
+    const user: User = combined.output;
+    assertEquals(user, {
+      id: 1,
+      name: "test",
+      roles: ["admin"],
+    });
+  }
+});
+
+Deno.test("combineResults - preserves type safety for arrays", () => {
+  const results: Result<number>[] = [
+    createSuccess(1),
+    createSuccess(2),
+    createSuccess(3),
+  ];
+  
+  const combined = combineResults(results);
+  assertEquals(combined.success, true);
+  if (combined.success) {
+    const numbers: number[] = combined.output;
+    assertEquals(numbers, [1, 2, 3]);
+  }
+});
+
+Deno.test("combineResults - preserves error properties", () => {
+  const results = [
+    createSuccess(1),
+    createFail({
+      error: "Failed to process value",
+      cause: "Invalid input",
+      name: "ValidationError",
+      message: "Custom error message",
+    }),
+    createSuccess(3),
+  ];
+  const combined = combineResults(results);
+  assertEquals(combined.success, false);
+  if (!combined.success) {
+    assertEquals(combined.error, "Failed to process value");
+    assertEquals(combined.cause, "Invalid input");
+    assertEquals(combined.name, "ValidationError");
+    assertEquals(combined.message, "Custom error message");
   }
 });
