@@ -59,8 +59,6 @@ export interface ResultFail {
   message?: string;
   /** full stack trace */
   stack?: string;
-  /** underlying cause of the error */
-  cause?: unknown;
   /** error type name */
   name?: string;
 }
@@ -148,7 +146,6 @@ export const createFail = (
       error: string;
       message?: string;
       stack?: string;
-      cause?: unknown;
       name?: string;
     },
 ): ResultFail => ({
@@ -157,7 +154,6 @@ export const createFail = (
   ...(typeof error === "string" ? {} : {
     message: error.message,
     stack: error.stack,
-    cause: error.cause,
     name: error.name,
   }),
 });

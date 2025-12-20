@@ -40,7 +40,6 @@ export const createErrorString = (error: unknown, context = ""): string =>
  *   - error: A string representation of the error
  *   - message: The error message if available
  *   - stack: The error stack trace if available
- *   - cause: The underlying cause of the error if available
  *   - name: The error type name if available
  */
 export const createErrorProperties = (
@@ -51,7 +50,6 @@ export const createErrorProperties = (
   context,
   message: error instanceof Error ? error.message : undefined,
   stack: error instanceof Error ? error.stack : undefined,
-  cause: error instanceof Error ? error.cause : undefined,
   name: error instanceof Error ? error.name : undefined,
 });
 
@@ -64,7 +62,7 @@ export const createErrorProperties = (
  * @param fn - The synchronous function to wrap
  * @returns {Result<T>} A Result containing either:
  *   - On success: ResultSuccess<T> with the function's return value
- *   - On error: ResultFail with error details (message, stack, cause, name)
+ *   - On error: ResultFail with error details (message, stack, name)
  *
  * @example
  * ```ts

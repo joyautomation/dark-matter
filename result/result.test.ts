@@ -17,13 +17,11 @@ Deno.test("createFail", () => {
   const result = createFail({
     error: "Operation failed",
     message: "Invalid input",
-    cause: "Value out of range",
     name: "ValidationError",
   });
   assertEquals(result.success, false);
   assertEquals(result.error, "Operation failed");
   assertEquals(result.message, "Invalid input");
-  assertEquals(result.cause, "Value out of range");
   assertEquals(result.name, "ValidationError");
 });
 
@@ -65,13 +63,11 @@ Deno.test("Result type inference - failure", () => {
   const result: Result<number> = createFail({
     error: "Operation failed",
     message: "Invalid input",
-    cause: "Value out of range",
     name: "ValidationError",
   });
   if (!isSuccess(result)) {
     assertEquals(result.error, "Operation failed");
     assertEquals(result.message, "Invalid input");
-    assertEquals(result.cause, "Value out of range");
     assertEquals(result.name, "ValidationError");
   }
 });

@@ -16,7 +16,6 @@ Deno.test("combineResults - array with failure", () => {
     createSuccess(1),
     createFail({
       error: "Failed to process value",
-      cause: "Invalid input",
       name: "ValidationError",
     }),
     createSuccess(3),
@@ -25,7 +24,6 @@ Deno.test("combineResults - array with failure", () => {
   assertEquals(combined.success, false);
   if (!combined.success) {
     assertEquals(combined.error, "Failed to process value");
-    assertEquals(combined.cause, "Invalid input");
     assertEquals(combined.name, "ValidationError");
   }
 });
@@ -61,7 +59,6 @@ Deno.test("combineResults - object with failure", () => {
     name: createSuccess("test"),
     count: createFail({
       error: "Invalid count",
-      cause: "Must be positive",
       name: "ValidationError",
     }),
   };
@@ -69,7 +66,6 @@ Deno.test("combineResults - object with failure", () => {
   assertEquals(combined.success, false);
   if (!combined.success) {
     assertEquals(combined.error, "Invalid count");
-    assertEquals(combined.cause, "Must be positive");
     assertEquals(combined.name, "ValidationError");
   }
 });
@@ -89,13 +85,13 @@ Deno.test("combineResults - preserves type safety for objects", () => {
     name: string;
     roles: string[];
   };
-  
+
   const results = {
     id: createSuccess(1),
     name: createSuccess("test"),
     roles: createSuccess(["admin"]),
   } satisfies ResultRecord<User>;
-  
+
   const combined = combineResults(results);
   assertEquals(combined.success, true);
   if (combined.success) {
@@ -114,7 +110,7 @@ Deno.test("combineResults - preserves type safety for arrays", () => {
     createSuccess(2),
     createSuccess(3),
   ];
-  
+
   const combined = combineResults(results);
   assertEquals(combined.success, true);
   if (combined.success) {
@@ -128,7 +124,6 @@ Deno.test("combineResults - preserves error properties", () => {
     createSuccess(1),
     createFail({
       error: "Failed to process value",
-      cause: "Invalid input",
       name: "ValidationError",
       message: "Custom error message",
     }),
@@ -138,7 +133,6 @@ Deno.test("combineResults - preserves error properties", () => {
   assertEquals(combined.success, false);
   if (!combined.success) {
     assertEquals(combined.error, "Failed to process value");
-    assertEquals(combined.cause, "Invalid input");
     assertEquals(combined.name, "ValidationError");
     assertEquals(combined.message, "Custom error message");
   }

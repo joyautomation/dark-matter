@@ -1,5 +1,10 @@
 import { assertEquals } from "@std/assert";
-import { createErrorString, createErrorProperties, rTry, rTryAsync } from "./error.ts";
+import {
+  createErrorProperties,
+  createErrorString,
+  rTry,
+  rTryAsync,
+} from "./error.ts";
 
 Deno.test("createErrorString", async (t) => {
   await t.step("formats Error with stack and context", () => {
@@ -18,15 +23,17 @@ Deno.test("createErrorString", async (t) => {
 
   await t.step("formats non-Error values", () => {
     assertEquals(createErrorString("test error"), "test error");
-    assertEquals(createErrorString({ message: "test error" }), "[object Object]");
+    assertEquals(
+      createErrorString({ message: "test error" }),
+      "[object Object]",
+    );
     assertEquals(createErrorString(42), "42");
   });
 });
 
 Deno.test("createErrorProperties", async (t) => {
-  await t.step("creates properties from Error with cause", () => {
-    const cause = new Error("root cause");
-    const testError = new Error("test error", { cause });
+  await t.step("creates properties from Error", () => {
+    const testError = new Error("test error");
     testError.name = "TestError";
     const result = createErrorProperties(testError, "Context: ");
     assertEquals(result, {
@@ -34,7 +41,6 @@ Deno.test("createErrorProperties", async (t) => {
       context: "Context: ",
       message: testError.message,
       stack: testError.stack,
-      cause: cause,
       name: testError.name,
     });
   });
@@ -46,7 +52,6 @@ Deno.test("createErrorProperties", async (t) => {
       context: "Context: ",
       message: undefined,
       stack: undefined,
-      cause: undefined,
       name: undefined,
     });
   });
@@ -59,7 +64,6 @@ Deno.test("createErrorProperties", async (t) => {
       context: "Context: ",
       message: undefined,
       stack: undefined,
-      cause: undefined,
       name: undefined,
     });
   });
@@ -75,8 +79,7 @@ Deno.test("rTry", async (t) => {
   });
 
   await t.step("returns fail for thrown Error", () => {
-    const cause = new Error("root cause");
-    const testError = new Error("test error", { cause });
+    const testError = new Error("test error");
     testError.name = "TestError";
 
     const result = rTry(() => {
@@ -88,7 +91,6 @@ Deno.test("rTry", async (t) => {
       assertEquals(result.error, createErrorString(testError));
       assertEquals(result.message, testError.message);
       assertEquals(result.stack, testError.stack);
-      assertEquals(result.cause, cause);
       assertEquals(result.name, testError.name);
     }
   });
@@ -108,8 +110,7 @@ Deno.test("rTryAsync", async (t) => {
   });
 
   await t.step("returns fail for thrown Error in async function", async () => {
-    const cause = new Error("root cause");
-    const testError = new Error("test error", { cause });
+    const testError = new Error("test error");
     testError.name = "TestError";
 
     const result = await rTryAsync(async () => {
@@ -122,7 +123,6 @@ Deno.test("rTryAsync", async (t) => {
       assertEquals(result.error, createErrorString(testError));
       assertEquals(result.message, testError.message);
       assertEquals(result.stack, testError.stack);
-      assertEquals(result.cause, cause);
       assertEquals(result.name, testError.name);
     }
   });
